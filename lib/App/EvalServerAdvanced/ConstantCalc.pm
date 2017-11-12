@@ -2,6 +2,8 @@ package App::EvalServerAdvanced::ConstantCalc;
 
 our $VERSION="0.01";
 
+# ABSTRACT: turns strings and constants into values
+
 use v5.24;
 use Moo;
 use Function::Parameters;
