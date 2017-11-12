@@ -24,11 +24,9 @@ method add_constant($key, $value) {
 }
 
 method calculate($string) {
+  say "wtf";
   say Dumper($self->_parser->from_string($string));
 }
-
-my $foo = __PACKAGE__->new();
-$foo->calculate("0x1|2");
 
 package 
   App::EvalServerAdvanced::ConstantCalc::Parser;
@@ -55,7 +53,7 @@ method consts() {
 method parse() {
   my $val = $self->parse_term;
 
-   warn "parsing term... ";
+   say "parsing term... ";
    1 while $self->any_of(
       sub {$self->expect("&"); $val &= $self->parse_term; 1},
       sub {$self->expect("^"); $val ^= $self->parse_term; 1},
@@ -66,7 +64,7 @@ method parse() {
 }
 
 method parse_term() {
-   0+$self->any_of(
+   $self->any_of(
       sub { $self->scope_of( "(", sub { $self->parse }, ")" ) },
 #      sub { $self->expect('~['); my $bitdepth=$self->token_int; $self->expect(']'); my $val = $self->parse_term; (~ ($val & _get_mask($bitdepth))) & _get_mask($bitdepth)},
       sub { $self->expect('~'); ~$self->parse_term},
@@ -75,7 +73,7 @@ method parse_term() {
 }
 
 method token_int() {
-  $self->any_of(
+  0+$self->any_of(
      sub {_from_hex($self->expect(qr/0x[0-9A-F_]+/i));},
      sub {_from_bin($self->expect(qr/0b[0-7_]+/i));},
      sub {_from_oct($self->expect(qr/0o?[0-7_]+/i));},
@@ -83,9 +81,9 @@ method token_int() {
      );
 }
 
-fun _get_mask($size) {
-  return 2**($size)-1;
-}
+#fun _get_mask($size) {
+#  return 2**($size)-1;
+#}
 
 fun _from_hex($val) {
   # naively just eval it
@@ -100,6 +98,5 @@ fun _from_oct($val) {
 fun _from_bin($val) {
   return eval $val;
 }
-
 
 1;
