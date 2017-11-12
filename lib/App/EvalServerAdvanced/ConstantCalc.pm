@@ -15,7 +15,7 @@ method get_value($key) {
 
 method add_constant($key, $value) {
   die "Invalid key [$key]" if ($key =~ /\s/ || $key =~ /^\s*\d/);
-  
+
   if (exists($self->constants->{$key}) && defined(my $eval = $self->constants->{$key})) {
     die "Cannot redefine a constant [$key].  Existing value [$eval] new value [$value]"
   }
@@ -24,11 +24,10 @@ method add_constant($key, $value) {
 }
 
 method calculate($string) {
-  say "wtf";
-  say Dumper($self->_parser->from_string($string));
+  return $self->_parser->from_string($string);
 }
 
-package 
+package
   App::EvalServerAdvanced::ConstantCalc::Parser;
 
 use strict;
@@ -66,7 +65,7 @@ method parse() {
 method parse_term() {
    $self->any_of(
       sub { $self->scope_of( "(", sub { $self->parse }, ")" ) },
-#      sub { $self->expect('~['); my $bitdepth=$self->token_int; $self->expect(']'); my $val = $self->parse_term; (~ ($val & _get_mask($bitdepth))) & _get_mask($bitdepth)},
+      sub { $self->expect('~['); my $bitdepth=$self->token_int; $self->expect(']'); my $val = $self->parse_term; (~ ($val & _get_mask($bitdepth))) & _get_mask($bitdepth)},
       sub { $self->expect('~'); ~$self->parse_term},
       sub { $self->token_int },
    );
@@ -81,9 +80,9 @@ method token_int() {
      );
 }
 
-#fun _get_mask($size) {
-#  return 2**($size)-1;
-#}
+fun _get_mask($size) {
+  return 2**($size)-1;
+}
 
 fun _from_hex($val) {
   # naively just eval it
