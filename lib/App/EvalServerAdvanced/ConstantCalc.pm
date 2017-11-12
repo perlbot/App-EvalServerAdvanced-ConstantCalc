@@ -1,4 +1,7 @@
 package App::EvalServerAdvanced::ConstantCalc;
+
+our $VERSION="0.01";
+
 use v5.24;
 use Moo;
 use Function::Parameters;
@@ -32,6 +35,12 @@ package
 
 use strict;
 use warnings;
+
+# Ensure we can't accidentally turn to strings, or floats, or anything other than an integer
+use integer;
+no warnings 'experimental::bitwise';
+use feature 'bitwise';
+
 use base qw/Parser::MGC/;
 use Function::Parameters;
 
@@ -52,7 +61,6 @@ method consts() {
 method parse() {
   my $val = $self->parse_term;
 
-   say "parsing term... ";
    1 while $self->any_of(
       sub {$self->expect("&"); $val &= $self->parse_term; 1},
       sub {$self->expect("^"); $val ^= $self->parse_term; 1},
@@ -67,6 +75,7 @@ method parse_term() {
       sub { $self->scope_of( "(", sub { $self->parse }, ")" ) },
       sub { $self->expect('~['); my $bitdepth=$self->token_int; $self->expect(']'); my $val = $self->parse_term; (~ ($val & _get_mask($bitdepth))) & _get_mask($bitdepth)},
       sub { $self->expect('~'); ~$self->parse_term},
+      sub { $self->token_constant },
       sub { $self->token_int },
    );
 }
@@ -78,6 +87,12 @@ method token_int() {
      sub {_from_oct($self->expect(qr/0o?[0-7_]+/i));},
      sub {$self->expect(qr/\d+/)}
      );
+}
+
+method token_constant() {
+  my $const = $self->expect(qr/[a-z_][a-z_0-9]+/i);
+
+  $self->consts->get_value($const);
 }
 
 fun _get_mask($size) {
@@ -99,3 +114,5 @@ fun _from_bin($val) {
 }
 
 1;
+
+__END__
