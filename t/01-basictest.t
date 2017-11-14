@@ -11,4 +11,6 @@ ok($calc->add_constant("bar", 0x02));
 
 is($calc->calculate("foo|bar"), 3);
 
+is($calc->calculate("~[32]((0xF000|0b1000)^0o777)"), 4294905352);
+
 done_testing;
