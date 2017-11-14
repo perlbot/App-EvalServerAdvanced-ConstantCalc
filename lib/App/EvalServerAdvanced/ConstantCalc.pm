@@ -1,6 +1,6 @@
 package App::EvalServerAdvanced::ConstantCalc;
 
-our $VERSION="0.01";
+our $VERSION = '0.02';
 
 # ABSTRACT: turns strings and constants into values
 
@@ -61,15 +61,18 @@ method consts() {
 }
 
 method parse() {
-  my $val = $self->parse_term;
+  $self->any_of(
+    sub {my $left = $self->parse_leveltwo(); $self->expect("&"); my $right = $self->parse(); $left & $right},
+    sub {$self->parse_leveltwo()}
+  );
+}
 
-   1 while $self->any_of(
-      sub {$self->expect("&"); $val &= $self->parse_term; 1},
-      sub {$self->expect("^"); $val ^= $self->parse_term; 1},
-      sub {$self->expect("|"); $val |= $self->parse_term; 1},
-      sub {0});
-
-  return $val;
+method parse_leveltwo() {
+  $self->any_of(
+      sub {my $left = $self->parse_term; $self->expect("^"); my $right = $self->parse(); $left ^ $right; },
+      sub {my $left = $self->parse_term; $self->expect("|"); my $right = $self->parse(); $left | $right; },
+      sub {$self->parse_term()}
+  );
 }
 
 method parse_term() {
@@ -139,7 +142,9 @@ to be used for parsing rules/values for Seccomp plugins for App::EvalServerAdvan
 =item Bitwise operators
 
 All bitwise operators | & ~ and ^ are supported.  Along with a special bitwise inverse with built in masking, ~[16] will negate all the bits, and apply a 16 bit mask to the resulting value.
- 
+
+Precedence is the same as Perl and C, where & has higher precedence and | and ^ are the same.  ~ has the highest precedence.
+
 =item Constant value definition
 
 You can predefine constants to be available to expressions so that you don't have to remember that O_RDONLY is 0, O_RDRW is 4.  This means that your expressions can be made to show your intent rather than just some magic number.
