@@ -1,3 +1,6 @@
+0.03 - 2017-11-14
+ - Actually fix precedence.  Damned right recursive parsers in my left associative operators.
+
 0.02 - 2017-11-14
  - Fix precedence.  What you thought this was gonna be right the first time?
 

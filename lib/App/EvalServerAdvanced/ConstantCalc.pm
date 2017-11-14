@@ -1,6 +1,6 @@
 package App::EvalServerAdvanced::ConstantCalc;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 # ABSTRACT: turns strings and constants into values
 
@@ -60,19 +60,27 @@ method consts() {
   return $self->{_private}{consts};
 }
 
-method parse() {
-  $self->any_of(
-    sub {my $left = $self->parse_leveltwo(); $self->expect("&"); my $right = $self->parse(); $left & $right},
-    sub {$self->parse_leveltwo()}
+method parse_upper() {
+  my $val = $self->parse_term();
+
+  1 while $self->any_of(
+    sub {$self->expect("&"); $val &= $self->parse_term(); 1},
+    sub {0}
   );
+
+  return $val;
 }
 
-method parse_leveltwo() {
-  $self->any_of(
-      sub {my $left = $self->parse_term; $self->expect("^"); my $right = $self->parse(); $left ^ $right; },
-      sub {my $left = $self->parse_term; $self->expect("|"); my $right = $self->parse(); $left | $right; },
-      sub {$self->parse_term()}
+method parse() {
+  my $val = $self->parse_upper();
+
+  1 while $self->any_of(
+      sub {$self->expect("^"); $val ^= $self->parse_upper(); 1 },
+      sub {$self->expect("|"); $val |= $self->parse_upper(); 1 },
+      sub {0}
   );
+
+  return $val;
 }
 
 method parse_term() {
