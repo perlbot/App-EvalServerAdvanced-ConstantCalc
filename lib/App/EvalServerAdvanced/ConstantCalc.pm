@@ -118,3 +118,60 @@ fun _from_bin($val) {
 1;
 
 __END__
+
+=pod
+ 
+=encoding UTF-8
+ 
+=head1 NAME
+ 
+App::EvalServerAdvanced::ConstantCalc - A basic bitwise calculator supporting bitwise operations
+ 
+=head1 DESCRIPTION
+ 
+This module handles calculating bitwise expressions using constant values.  Things like O_CREAT|O_RDWR|O_EXCL|O_CLOEXEC.  Mainly intended
+to be used for parsing rules/values for Seccomp plugins for App::EvalServerAdvanced but does not depend on it.
+
+=head1 FEATURES
+ 
+=over 1
+ 
+=item Bitwise operators
+
+All bitwise operators | & ~ and ^ are supported.  Along with a special bitwise inverse with built in masking, ~[16] will negate all the bits, and apply a 16 bit mask to the resulting value.
+ 
+=item Constant value definition
+
+You can predefine constants to be available to expressions so that you don't have to remember that O_RDONLY is 0, O_RDRW is 4.  This means that your expressions can be made to show your intent rather than just some magic number.
+
+=back
+
+=head1 METHODS
+
+=over 1
+
+=item new
+
+Constructor, can take a single argument C<constants> that is a has of any constants you want to define.
+
+=item add_constant
+
+Add a constant at runtime, takes two arguments C<$key> and C<$value>.  Will prevent you from setting up invalid constants or ones with an invalid value.
+
+Valid keys begin with C</[a-z_]/i> and are followed by C</[a-z0-9_]/i>.  Valid values are any integer.
+
+=item get_value
+
+Takes a C<$key> gives back the corrosponding value for the constant.  Most likely not useful for anybody, but used internally to do the lookup.  Will die if the constant doesn't exist.
+ 
+=back
+ 
+=head1 SEE ALSO
+ 
+L<App::EvalServerAdvanced>, L<Parser::MGC>
+ 
+=head1 AUTHOR
+ 
+Ryan Voots <simcop@cpan.org>
+ 
+=cut
