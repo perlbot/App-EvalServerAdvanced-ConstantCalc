@@ -1,3 +1,7 @@
+0.04 - 2017-11-14
+ - Remove string eval for parsing ints.
+ - Add more checks for invalid values being passed in
+
 0.03 - 2017-11-14
  - Actually fix precedence.  Damned right recursive parsers in my left associative operators.
 

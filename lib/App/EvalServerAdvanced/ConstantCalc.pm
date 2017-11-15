@@ -1,6 +1,6 @@
 package App::EvalServerAdvanced::ConstantCalc;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # ABSTRACT: turns strings and constants into values
 
@@ -24,6 +24,9 @@ method add_constant($key, $value) {
   if (exists($self->constants->{$key}) && defined(my $eval = $self->constants->{$key})) {
     die "Cannot redefine a constant [$key].  Existing value [$eval] new value [$value]"
   }
+
+  die "Value undefined for [$key]" unless defined($value);
+  die "Value [$value] for [$key] must be an integer" if ($value =~ /[^\d\-+_]/);
 
   $self->constants->{$key} = $value;
 }
@@ -95,9 +98,9 @@ method parse_term() {
 
 method token_int() {
   0+$self->any_of(
-     sub {_from_hex($self->expect(qr/0x[0-9A-F_]+/i));},
-     sub {_from_bin($self->expect(qr/0b[0-7_]+/i));},
-     sub {_from_oct($self->expect(qr/0o?[0-7_]+/i));},
+     sub {_to_int($self->expect(qr/0x[0-9A-F_]+/i));},
+     sub {_to_int($self->expect(qr/0b[0-7_]+/i));},
+     sub {_to_int($self->expect(qr/0o?[0-7_]+/i));},
      sub {$self->expect(qr/\d+/)}
      );
 }
@@ -112,18 +115,10 @@ fun _get_mask($size) {
   return 2**($size)-1;
 }
 
-fun _from_hex($val) {
-  # naively just eval it
-  return eval $val;
-}
 
-fun _from_oct($val) {
+fun _to_int($val) {
   $val =~ s/^0o/0/i;
-  return eval $val;
-}
-
-fun _from_bin($val) {
-  return eval $val;
+  return oct $val;
 }
 
 1;
