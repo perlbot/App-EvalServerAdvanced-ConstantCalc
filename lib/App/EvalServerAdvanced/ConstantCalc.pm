@@ -46,7 +46,7 @@ use integer;
 no warnings 'experimental::bitwise';
 use feature 'bitwise';
 
-use base qw/Parser::MGC/;
+use parent qw/Parser::MGC/;
 use Function::Parameters;
 
 method new($class: %args) {
