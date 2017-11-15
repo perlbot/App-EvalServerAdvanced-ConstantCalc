@@ -1,6 +1,6 @@
 package App::EvalServerAdvanced::ConstantCalc;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # ABSTRACT: turns strings and constants into values
 
@@ -118,7 +118,12 @@ fun _get_mask($size) {
 
 fun _to_int($val) {
   $val =~ s/^0o/0/i;
-  return oct $val;
+
+  if ($val =~ /^0/) {
+    return oct $val;
+  } else {
+    return 0+$val;
+  }
 }
 
 1;

@@ -1,3 +1,7 @@
+0.06 - 2017-11-15
+ - Don't use oct for non-encoded integer values
+ - Appease Grinnz with his use parent PR
+
 0.05 - 2017-11-15
  - Allow constants to be input as hex, oct, and binary
 

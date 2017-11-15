@@ -8,6 +8,7 @@ my $calc = App::EvalServerAdvanced::ConstantCalc->new();
 
 ok($calc->add_constant("foo", 0x01));
 ok($calc->add_constant("bar", "0x02"));
+ok($calc->add_constant("baz", "9"));
 
 is($calc->calculate("foo|bar"), 3);
 
