@@ -1,3 +1,6 @@
+0.05 - 2017-11-15
+ - Allow constants to be input as hex, oct, and binary
+
 0.04 - 2017-11-14
  - Remove string eval for parsing ints.
  - Add more checks for invalid values being passed in

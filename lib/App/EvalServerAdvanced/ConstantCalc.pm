@@ -1,6 +1,6 @@
 package App::EvalServerAdvanced::ConstantCalc;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 # ABSTRACT: turns strings and constants into values
 
@@ -26,9 +26,9 @@ method add_constant($key, $value) {
   }
 
   die "Value undefined for [$key]" unless defined($value);
-  die "Value [$value] for [$key] must be an integer" if ($value =~ /[^\d\-+_]/);
+  die "Value [$value] for [$key] must be an integer" if ($value =~ /[^xob\d\-+_]/i);
 
-  $self->constants->{$key} = $value;
+  $self->constants->{$key} = App::EvalServerAdvanced::ConstantCalc::Parser::_to_int($value);
 }
 
 method calculate($string) {
