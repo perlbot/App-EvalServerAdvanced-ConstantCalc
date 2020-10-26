@@ -16,7 +16,13 @@ jobs:
     name: Perl ${{ matrix.perl-version }}
     steps:
       - uses: actions/checkout@v2
+      - name: Get dependencies
+        run: |
+          cpanm Dist::Zilla
+          dzil listdeps --missing --develop --author | xargs cpanm --verbose
       - name: Regular tests
         run: |
-            cpanm Dist::Zilla
-            dzil listdeps --missing --author | xargs cpanm --verbose
+          dzil test
+      - name: X Tests
+        run: |
+          dzil xtest
