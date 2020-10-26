@@ -19,7 +19,8 @@ jobs:
       - name: Get dependencies
         run: |
           cpanm Dist::Zilla
-          dzil listdeps --missing --develop --author | xargs cpanm --verbose
+          dzil authordeps --missing | cpanm
+          dzil listdeps --missing --develop --author | cpanm
       - name: Regular tests
         run: |
           dzil test
