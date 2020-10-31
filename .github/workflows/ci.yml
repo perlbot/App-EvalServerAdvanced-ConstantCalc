@@ -1,15 +1,24 @@
 name: CI
 
-on: [push]
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   perl-job:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, "${{ matrix.architecture }}" ]
     container:
       image: perl:${{ matrix.perl-version }}
     strategy:
       fail-fast: false
       matrix:
+        architecture:
+          - X64
+          - ARM
         perl-version:
           - '5.32'
           - 'latest'
